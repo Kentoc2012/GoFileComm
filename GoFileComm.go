@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
+	"time"
 )
 
 const ( //цветовые коды
@@ -20,20 +22,29 @@ const ( //цветовые коды
 )
 
 func main() {
+	fmt.Println(Cyan + "  ____        _____ _ _        ____                             ") //не спрашивайте...
+	fmt.Println(" / ___| ___  |  ___(_) | ___  / ___|___  _ __ ___  _ __ ___     ")
+	fmt.Println("| |  _ / _ \\ | |_  | | |/ _ \\| |   / _ \\| '_ ` _ \\| '_ ` _ \\  ")
+	fmt.Println("| |_| | (_) ||  _| | | |  __/| |__| (_) | | | | | | | | | | |   ")
+	fmt.Println(" \\____|\\___/ |_|   |_|_|\\___| \\____\\___/|_| |_| |_|_| |_| |_|  ")
+	fmt.Println("                                          [VERSION 2.0 STABLE] " + Reset)
+
 	for {
 		var an1 string
 		fmt.Println("удалить, прочитать, создать файл, создать папку, просмотреть деректорию, выполнить файл или показать дополнительный текст? (1/2/3/4/5/6/help) напишите exit для выхода") //меню
 		fmt.Scan(&an1)
 		if an1 == "help" || an1 == "h" {
-			fmt.Println("GoFileComm, это файловый менеджер созданный новичком в Go, так что не судите строго\n Функционал:\n 1. удаление файлов\n 2. прочтение файлов (не знаю зачем, но пусть будет)\n 3. создание файлов\n 4. создание папки\n 5. просмотр деректории (папки)\n 6. выполнение файла\n \n разделение создания файла и деректории обусловленно удобством, чтобы не дописывать всегда .dir в конце названия.")
+			fmt.Println("GoFileComm, это файловый менеджер созданный новичком в Go, так что не судите строго\n Функционал:\n 1. удаление файлов\n 2. прочтение файлов (не знаю зачем, но пусть будет)\n 3. создание файлов\n 4. создание папки\n 5. просмотр директории (папки)\n 6. выполнение файла\n \n разделение создания файла и директории обусловлено удобством, чтобы не дописывать всегда .dir в конце названия.")
 			continue
 		}
-		if an1 == "exit" || an1 == "e" {
+		if an1 == "exit" || an1 == "e" { //выход
+			fmt.Println(Yellow + "Завершение работы. надеюсь вам понравился GoFileComm")
+			time.Sleep(3 * time.Second)
 			return
 		}
 		an, err := strconv.Atoi(an1)
 		if err != nil {
-			fmt.Println(Red+"errot", err)
+			fmt.Println(Red+"errot"+Reset, err)
 		}
 
 		if an != 1 && an != 2 && an != 3 && an != 4 && an != 5 && an != 6 {
@@ -93,13 +104,13 @@ func main() {
 			}
 			files, err := os.ReadDir(finalpath)
 			if err != nil {
-				fmt.Println("\033[31m[ERROR]\033[0m ошибка сканирования", err)
+				fmt.Println(Red+"[ERROR] ошибка сканирования", err)
 			} else {
 				fmt.Println(Cyan+"Содержимое директории:", finalpath)
 				fmt.Println("-----------------------------------")
 				for _, file := range files {
 					if file.IsDir() {
-						fmt.Println("\033[34m[DIR]\033[0m ", file.Name()+Reset)
+						fmt.Println(Blue+"[DIR]", file.Name()+Reset)
 					} else {
 						fmt.Println("[FILE] ", file.Name())
 					}
@@ -139,12 +150,12 @@ func main() {
 				text = scanner.Text()
 			}
 			finalpath := filepath.Join(currentdir, name)
-			text1 := []byte(text)
 			ext := filepath.Ext(name) //авто замена пустоты на .txt
 			if ext == "" {
 				finalpath = name + ".txt"
 			}
-			err := ioutil.WriteFile(finalpath, text1, 0644) //создание файла
+			formattedText := strings.ReplaceAll(text, "\\n", "\n")
+			err := ioutil.WriteFile(finalpath, []byte(formattedText), 0644) //создание файла
 			if err != nil {
 				fmt.Println(Red+"error\n", err)
 			}
